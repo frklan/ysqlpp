@@ -1,8 +1,6 @@
 from conans import ConanFile
 
 class YsqlppProject(ConanFile):
-    # Note: options are copied from CMake boolean options.
-    # When turned off, CMake sometimes passes them as empty strings.
     options = {
     }
     name = "ysqlpp"

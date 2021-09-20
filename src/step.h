@@ -9,7 +9,7 @@
 
 #include <sqlite3.h>
 
-namespace impl {
+namespace y44::ysqlpp::impl {
 
   struct value_t : public std::variant<int64_t, double, std::string_view> {
       operator int64_t() const {
@@ -25,7 +25,7 @@ namespace impl {
       }
 
       operator std::string() {
-        return std::string{ std::get<std::string_view>(*this) };
+        return std::string{std::get<std::string_view>(*this)};
       }
   };
 
@@ -33,18 +33,18 @@ namespace impl {
   value_t value(sqlite3_stmt *stmt, int col) {
     auto type = sqlite3_column_type(stmt, col);
     // const unsigned char *s = nullptr;
-    switch (type) {
+    switch(type) {
     case SQLITE_INTEGER:
-      return { sqlite3_column_int64(stmt, col) };
+      return {sqlite3_column_int64(stmt, col)};
     case SQLITE_FLOAT:
-      return { sqlite3_column_double(stmt, col) };
+      return {sqlite3_column_double(stmt, col)};
     case SQLITE_BLOB:
       throw new std::runtime_error("Blobs are not supported");
     case SQLITE_NULL:
       throw new std::runtime_error("null are not supported");
     default:
       auto s = reinterpret_cast<const char *>(sqlite3_column_text(stmt, col));
-      return { s ? s : "" };
+      return {s ? s : ""};
     }
   }
 
@@ -60,17 +60,17 @@ namespace impl {
   struct arity<R (F::*)(Args...) const> {
       static const int count = sizeof...(Args);
   };
-}// namespace impl
+}// namespace y44::ysqlpp::impl
 
 namespace y44::ysqlpp {
   template <typename F>
   bool step(sqlite3_stmt *stmt, F &&f) {
-    if (sqlite3_step(stmt) != SQLITE_ROW) {
+    if(sqlite3_step(stmt) != SQLITE_ROW) {
       return false;
     }
 
-    auto c = std::make_index_sequence<::impl::arity<std::remove_reference_t<decltype(f)>>::count>{};
-    ::impl::call(std::forward<F>(f), stmt, c);
+    auto c = std::make_index_sequence<impl::arity<std::remove_reference_t<decltype(f)>>::count>{};
+    impl::call(std::forward<F>(f), stmt, c);
     return true;
   }
 

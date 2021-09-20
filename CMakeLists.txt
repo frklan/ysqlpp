@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 
 # Set the project name to your project name, my project isn't very descriptive
 project(ysqlpp CXX)
+
 include(cmake/StandardProjectSettings.cmake)
 include(cmake/PreventInSourceBuilds.cmake)
 
@@ -43,7 +44,7 @@ include(cmake/StaticAnalyzers.cmake)
 
 option(BUILD_SHARED_LIBS "Enable compilation of shared libraries" OFF)
 option(ENABLE_TESTING "Enable Test Builds" ON)
-option(ENABLE_FUZZING "Enable Fuzzing Builds" OFF)
+option(ENABLE_FUZZING "Enable Fuzzing Builds" ON)
 
 # Very basic PCH example
 option(ENABLE_PCH "Enable Precompiled Headers" OFF)
@@ -77,8 +78,6 @@ if(ENABLE_FUZZING)
   add_subdirectory(fuzz_test)
 endif()
 
-add_subdirectory(src)
-
 option(ENABLE_EXAMPLES "Build example programs" ON)
 if(ENABLE_EXAMPLES)
   add_subdirectory(examples)
@@ -89,3 +88,5 @@ if(ENABLE_UNITY)
   # Add for any project you want to apply unity builds for
   set_target_properties(intro PROPERTIES UNITY_BUILD ON)
 endif()
+
+add_subdirectory(src)

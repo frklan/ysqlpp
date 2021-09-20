@@ -1,6 +1,6 @@
 #pragma once
 
-#include <fmt/format.h>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -17,14 +17,13 @@ namespace y44::ysqlpp::impl {
     if(rc != SQLITE_OK) {
       auto *msg = sqlite3_errmsg(db);
       auto c = sqlite3_extended_errcode(db);
-      throw std::runtime_error(fmt::format("{}, {}", msg, c));
+      throw std::runtime_error(std::string{msg} + " (" + std::to_string(c) + ")");
     }
-    return { stmt, remain };
+    return {stmt, remain};
   }
 }// namespace y44::ysqlpp::impl
 
 namespace y44::ysqlpp {
-
   [[nodiscard]] sqlite3_stmt *prepare_single(y44::ysqlpp::DB &db, std::string_view sql) {
     return y44::ysqlpp::impl::prepare(db, sql).first;
   }

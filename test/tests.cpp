@@ -1,14 +1,76 @@
+#include <filesystem>
+#include <random>
+#include <vector>
+
 #include <catch2/catch.hpp>
 
-unsigned int Factorial(unsigned int number)// NOLINT(misc-no-recursion)
-{
-  return number <= 1 ? number : Factorial(number - 1) * number;
+#include <ysqlpp.h>
+
+std::filesystem::path get_random_file() {
+  std::random_device rd;
+  std::uniform_real_distribution<int> dist{1000, 9999};
+
+  auto f = std::filesystem::temp_directory_path();
+  do {
+    f /= std::to_string(dist(rd));
+  } while(std::filesystem::directory_entry(f).exists());
+
+  return f;
 }
 
-TEST_CASE("Factorials are computed", "[factorial]")
-{
-  REQUIRE(Factorial(1) == 1);
-  REQUIRE(Factorial(2) == 2);
-  REQUIRE(Factorial(3) == 6);
-  REQUIRE(Factorial(10) == 3628800);
+y44::ysqlpp::DB create_db(std::filesystem::path db_path) {
+  auto db = y44::ysqlpp::open(db_path);
+
+  y44::ysqlpp::exec(db, "create table if not exists MYTABLE (NAME text, VALUE float);");
+
+  y44::ysqlpp::exec(db, "insert into MYTABLE (NAME, VALUE) values ('Name0', 0 );");
+  y44::ysqlpp::exec(db, "insert into MYTABLE (NAME, VALUE) values ('Name1', 1 );");
+  y44::ysqlpp::exec(db, "insert into MYTABLE (NAME, VALUE) values ('Name2', 2 );");
+
+  return db;
+}
+
+TEST_CASE("Create DB", "[CREATE DB]") {
+  const auto db_path = get_random_file();
+  {
+    auto db = create_db(db_path);
+    REQUIRE(std::filesystem::directory_entry(db_path).exists());
+  }
+  std::filesystem::remove(db_path);
+}
+
+TEST_CASE("step", "[step]") {
+  const auto db_path = get_random_file();
+  {
+    auto db = create_db(db_path);
+
+    auto *stmt = y44::ysqlpp::prepare_single(db, "select count(NAME) from MYTABLE;");
+
+    int64_t count_rows{0};
+    y44::ysqlpp::step(stmt, [&count_rows](int64_t c) {
+      count_rows = c;
+    });
+
+    REQUIRE(count_rows == 3);
+  }
+  std::filesystem::remove(db_path);
+}
+
+TEST_CASE("For Each Row", "[for_each]") {
+  const auto db_path = get_random_file();
+  {
+    auto db = create_db(db_path);
+
+    auto *stmt = y44::ysqlpp::prepare_single(db, "select NAME from MYTABLE;");
+    std::vector<std::string> vec;
+    y44::ysqlpp::for_each(stmt, [&vec](const std::string &name) {
+      vec.push_back(name);
+    });
+
+    REQUIRE(vec.size() == 3);
+    REQUIRE(vec[0] == "Name0");
+    REQUIRE(vec[1] == "Name1");
+    REQUIRE(vec[2] == "Name2");
+  }
+  std::filesystem::remove(db_path);
 }

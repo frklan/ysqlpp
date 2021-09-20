@@ -13,7 +13,7 @@
 int main(int /*argc*/, const char ** /*argv*/) {
   spdlog::info("Hello, {}!", "World");
 
-  const std::string db_file{"test.db"};
+  const std::filesystem::path db_file{"test.db"};
 
   try {
     auto db = y44::ysqlpp::open(db_file);

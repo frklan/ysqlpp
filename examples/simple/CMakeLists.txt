@@ -1,18 +1,20 @@
+cmake_minimum_required(VERSION 3.21)
+
+project(ysqlpp-simple CXX)
 
 find_package(fmt)
 find_package(spdlog)
 find_package(docopt)
 
-#Generic test that uses conan libs
-#add_executable(ysqlpp main.cpp)
-add_executable(ysqlpp-simple main.cpp)
+add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(
-  ysqlpp-simple
+  ${PROJECT_NAME}
   PRIVATE project_options
   project_warnings
   docopt::docopt
   fmt::fmt
-  spdlog::spdlog
-  ysqlpp)
+  spdlog::spdlog)
 
-target_include_directories(ysqlpp-simple PRIVATE ${PROJECT_SOURCE_DIR}/../src)
+target_link_libraries(${PROJECT_NAME}
+  PRIVATE
+  ysqlpp)
