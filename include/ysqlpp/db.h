@@ -1,3 +1,6 @@
+// Copyright (C) 2021, Fredrik Andersson
+// SPDX-License-Identifier: CC-BY-NC-4.0
+
 #pragma once
 
 #include <sqlite3.h>
@@ -9,26 +12,37 @@ namespace y44::ysqlpp {
 
       explicit DB(sqlite3 *db) : m_db(db) {}
 
-      DB(DB&& rhs) noexcept :
-      m_db(rhs.m_db) {
+      // move
+      DB(DB &&rhs)
+      noexcept : m_db(rhs.m_db) {
         rhs.m_db = nullptr;
       }
 
-      operator sqlite3*() {
-        return m_db;
-      }
+      // copy
+      DB(const DB &) = delete;
 
-      operator sqlite3**() {
-        return &m_db;
-      }
+      // copy assignment operator
+      DB operator=(const DB &) = delete;
 
-      DB& operator=(DB &&rhs) noexcept {
+      // move asignment operator
+      DB &operator=(DB &&rhs) noexcept {
         reset();
         m_db = rhs.m_db;
         rhs.m_db = nullptr;
         return *this;
       }
 
+      /*operator sqlite3 *() {
+        return m_db;
+      }
+
+      operator sqlite3 **() {
+        return &m_db;
+      }*/
+
+      sqlite3 *get() noexcept {
+        return m_db;
+      }
       ~DB() noexcept {
         close();
       }
@@ -51,5 +65,4 @@ namespace y44::ysqlpp {
   };
 
 
-
-} // namespace y44::ysqlpp
+}// namespace y44::ysqlpp

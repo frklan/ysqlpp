@@ -1,4 +1,8 @@
+// Copyright (C) 2021, Fredrik Andersson
+// SPDX-License-Identifier: CC-BY-NC-4.0
+
 #include <filesystem>
+#include <iostream>
 #include <random>
 #include <vector>
 
@@ -8,17 +12,18 @@
 
 std::filesystem::path get_random_file() {
   std::random_device rd;
-  std::uniform_real_distribution<int> dist{1000, 9999};
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<> dist{1000L, 9999L};
 
   auto f = std::filesystem::temp_directory_path();
   do {
-    f /= std::to_string(dist(rd));
+    f /= std::to_string(dist(gen));
   } while(std::filesystem::directory_entry(f).exists());
 
   return f;
 }
 
-y44::ysqlpp::DB create_db(std::filesystem::path db_path) {
+y44::ysqlpp::DB create_db(const std::filesystem::path &db_path) {
   auto db = y44::ysqlpp::open(db_path);
 
   y44::ysqlpp::exec(db, "create table if not exists MYTABLE (NAME text, VALUE float);");
@@ -71,6 +76,24 @@ TEST_CASE("For Each Row", "[for_each]") {
     REQUIRE(vec[0] == "Name0");
     REQUIRE(vec[1] == "Name1");
     REQUIRE(vec[2] == "Name2");
+  }
+  std::filesystem::remove(db_path);
+}
+
+
+TEST_CASE("pass db as shared_ptr", "[shared_ptr]") {
+  const auto db_path = get_random_file();
+  {
+    auto db = std::make_shared<y44::ysqlpp::DB>(create_db(db_path));
+
+    auto *stmt = y44::ysqlpp::prepare_single(*db, "select count(NAME) from MYTABLE;");
+
+    int64_t count_rows{0};
+    y44::ysqlpp::step(stmt, [&count_rows](int64_t c) {
+      count_rows = c;
+    });
+
+    REQUIRE(count_rows == 3);
   }
   std::filesystem::remove(db_path);
 }

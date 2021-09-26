@@ -1,3 +1,6 @@
+// Copyright (C) 2021, Fredrik Andersson
+// SPDX-License-Identifier: CC-BY-NC-4.0
+
 #pragma once
 
 #include <exception>
@@ -13,7 +16,7 @@
 #include "step.h"
 
 namespace y44::ysqlpp::impl {
-  std::string trim(std::string str) {
+  [[nodiscard]] inline std::string trim(const std::string &str) {
     auto start = str.find_first_not_of(' ');
     if(start == std::string::npos) {
       return "";
@@ -25,7 +28,7 @@ namespace y44::ysqlpp::impl {
 }// namespace y44::ysqlpp::impl
 
 namespace y44::ysqlpp {
-  void exec(y44::ysqlpp::DB &db, std::string_view sql) {
+  inline void exec(y44::ysqlpp::DB &db, std::string_view sql) {
     std::string s{sql};
 
     do {
@@ -34,6 +37,6 @@ namespace y44::ysqlpp {
 
       step(stmt, []() {});
       s = remainin;
-    } while(s[0]);
+    } while(s[0] != 0);
   }
 }// namespace y44::ysqlpp

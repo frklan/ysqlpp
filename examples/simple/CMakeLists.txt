@@ -1,20 +1,16 @@
-cmake_minimum_required(VERSION 3.21)
-
-project(ysqlpp-simple CXX)
-
-find_package(fmt)
 find_package(spdlog)
-find_package(docopt)
+find_package(SQLite3)
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME}-simple main.cpp)
+
+target_compile_features(${PROJECT_NAME}-simple PRIVATE cxx_std_20)
+
 target_link_libraries(
-  ${PROJECT_NAME}
-  PRIVATE project_options
-  project_warnings
-  docopt::docopt
-  fmt::fmt
-  spdlog::spdlog)
-
-target_link_libraries(${PROJECT_NAME}
+  ${PROJECT_NAME}-simple
   PRIVATE
-  ysqlpp)
+    project_options
+    project_warnings
+    spdlog::spdlog
+    SQLite3
+    ${PROJECT_NAME}
+)

@@ -1,7 +1,8 @@
 // Copyright (C) 2021, Fredrik Andersson
 // SPDX-License-Identifier: CC-BY-NC-4.0
+#include <ysqlpp/ysqlpp.h>
 
-#include <catch2/catch.hpp>
 
-TEST_CASE("Constexpr test", "[constexpr]") {
-}
+int main() {
+  return 0;
+};
