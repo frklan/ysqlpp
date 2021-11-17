@@ -1,3 +1,5 @@
+// Copyright (C) 2021, Fredrik Andersson
+// SPDX-License-Identifier: CC-BY-NC-4.0
 
 #include <exception>
 #include <filesystem>
@@ -7,7 +9,7 @@
 
 #include <spdlog/spdlog.h>
 
-#include <ysqlpp.h>
+#include <ysqlpp/ysqlpp.h>
 
 
 int main(int /*argc*/, const char ** /*argv*/) {
@@ -21,14 +23,14 @@ int main(int /*argc*/, const char ** /*argv*/) {
 
     std::random_device rd;
     std::uniform_real_distribution<double> dist{1.0, 100.0};
-    exec(db, "insert into rooms (NAME, VALUE) values ('Fredrik', " + std::to_string(dist(rd)) + ");");
-    exec(db, "insert into rooms (NAME, VALUE) values ('Hanna', " + std::to_string(dist(rd)) + ");");
-    exec(db, "insert into room (NAME, VALUE) values ('Emma', " + std::to_string(dist(rd)) + ");");
-    exec(db, "insert into room (NAME, VALUE) values ('Liza', " + std::to_string(dist(rd)) + ");");
+    exec(db, "insert into ROOM (NAME, VALUE) values ('Fredrik', " + std::to_string(dist(rd)) + ");");
+    exec(db, "insert into ROOM (NAME, VALUE) values ('Hanna', " + std::to_string(dist(rd)) + ");");
+    exec(db, "insert into ROOM (NAME, VALUE) values ('Emma', " + std::to_string(dist(rd)) + ");");
+    exec(db, "insert into ROOM (NAME, VALUE) values ('Liza', " + std::to_string(dist(rd)) + ");");
 
     auto *stmt = y44::ysqlpp::prepare_single(db, "select * from ROOM;");
     y44::ysqlpp::for_each(stmt, [](const std::string &name, double val) {
-      fmt::print("{}:{}\n", name, val);
+      spdlog::info("{}:{}\n", name, val);
     });
   } catch(std::runtime_error &e) {
     spdlog::error("{}", e.what());

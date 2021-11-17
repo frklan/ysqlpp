@@ -1,3 +1,6 @@
+// Copyright (C) 2021, Fredrik Andersson
+// SPDX-License-Identifier: CC-BY-NC-4.0
+
 #pragma once
 
 #include <iostream>
@@ -29,8 +32,7 @@ namespace y44::ysqlpp::impl {
       }
   };
 
-
-  value_t value(sqlite3_stmt *stmt, int col) {
+  inline value_t value(sqlite3_stmt *stmt, int col) {
     auto type = sqlite3_column_type(stmt, col);
     // const unsigned char *s = nullptr;
     switch(type) {
@@ -39,12 +41,12 @@ namespace y44::ysqlpp::impl {
     case SQLITE_FLOAT:
       return {sqlite3_column_double(stmt, col)};
     case SQLITE_BLOB:
-      throw new std::runtime_error("Blobs are not supported");
+      throw std::runtime_error("Blobs are not supported");
     case SQLITE_NULL:
-      throw new std::runtime_error("null are not supported");
+      throw std::runtime_error("null are not supported");
     default:
-      auto s = reinterpret_cast<const char *>(sqlite3_column_text(stmt, col));
-      return {s ? s : ""};
+      const auto *s = reinterpret_cast<const char *>(sqlite3_column_text(stmt, col));
+      return {s != nullptr ? s : ""};
     }
   }
 
