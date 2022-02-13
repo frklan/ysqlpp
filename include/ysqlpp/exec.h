@@ -1,4 +1,4 @@
-// Copyright (C) 2021, Fredrik Andersson
+// Copyright (C) 2021-2022, Fredrik Andersson
 // SPDX-License-Identifier: CC-BY-NC-4.0
 
 #pragma once
@@ -14,6 +14,7 @@
 #include "db.h"
 #include "prepare.h"
 #include "step.h"
+#include "stmt.h"
 
 namespace y44::ysqlpp::impl {
   [[nodiscard]] inline std::string trim(const std::string &str) {

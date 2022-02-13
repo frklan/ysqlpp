@@ -1,4 +1,4 @@
-// Copyright (C) 2021, Fredrik Andersson
+// Copyright (C) 2021-2022, Fredrik Andersson
 // SPDX-License-Identifier: CC-BY-NC-4.0
 
 #include <exception>
@@ -28,7 +28,7 @@ int main(int /*argc*/, const char ** /*argv*/) {
     exec(db, "insert into ROOM (NAME, VALUE) values ('Emma', " + std::to_string(dist(rd)) + ");");
     exec(db, "insert into ROOM (NAME, VALUE) values ('Liza', " + std::to_string(dist(rd)) + ");");
 
-    auto *stmt = y44::ysqlpp::prepare_single(db, "select * from ROOM;");
+    auto stmt = y44::ysqlpp::prepare_single(db, "select * from ROOM;");
     y44::ysqlpp::for_each(stmt, [](const std::string &name, double val) {
       spdlog::info("{}:{}\n", name, val);
     });

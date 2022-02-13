@@ -1,4 +1,4 @@
-// Copyright (C) 2021, Fredrik Andersson
+// Copyright (C) 2021-2022, Fredrik Andersson
 // SPDX-License-Identifier: CC-BY-NC-4.0
 
 #pragma once
@@ -8,3 +8,4 @@
 #include "for_each.h"
 #include "open.h"
 #include "step.h"
+#include "stmt.h"

@@ -1,5 +1,6 @@
 find_package(Catch2 REQUIRED)
 find_package(SQLite3 REQUIRED)
+find_package(fmt REQUIRED)
 
 include(CTest)
 include(Catch)
@@ -15,7 +16,9 @@ target_compile_features(tests PRIVATE cxx_std_20)
 target_link_libraries(tests PRIVATE 
 project_warnings project_options 
 catch_main
-SQLite3)
+SQLite3
+Catch2::Catch2
+fmt::fmt)
 
 target_include_directories(tests PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
