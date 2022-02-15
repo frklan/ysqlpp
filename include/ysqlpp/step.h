@@ -1,4 +1,4 @@
-// Copyright (C) 2021, Fredrik Andersson
+// Copyright (C) 2021-2022, Fredrik Andersson
 // SPDX-License-Identifier: CC-BY-NC-4.0
 
 #pragma once
@@ -11,6 +11,8 @@
 #include <variant>
 
 #include <sqlite3.h>
+
+#include "stmt.h"
 
 namespace y44::ysqlpp::impl {
 
@@ -32,26 +34,26 @@ namespace y44::ysqlpp::impl {
       }
   };
 
-  inline value_t value(sqlite3_stmt *stmt, int col) {
-    auto type = sqlite3_column_type(stmt, col);
+  inline value_t value(Stmt &stmt, int col) {
+    auto type = sqlite3_column_type(static_cast<sqlite3_stmt *>(stmt), col);
     // const unsigned char *s = nullptr;
     switch(type) {
     case SQLITE_INTEGER:
-      return {sqlite3_column_int64(stmt, col)};
+      return {sqlite3_column_int64(static_cast<sqlite3_stmt *>(stmt), col)};
     case SQLITE_FLOAT:
-      return {sqlite3_column_double(stmt, col)};
+      return {sqlite3_column_double(static_cast<sqlite3_stmt *>(stmt), col)};
     case SQLITE_BLOB:
       throw std::runtime_error("Blobs are not supported");
     case SQLITE_NULL:
       throw std::runtime_error("null are not supported");
     default:
-      const auto *s = reinterpret_cast<const char *>(sqlite3_column_text(stmt, col));
+      const auto *s = reinterpret_cast<const char *>(sqlite3_column_text(stmt.get(), col));
       return {s != nullptr ? s : ""};
     }
   }
 
   template <typename F, std::size_t... idx>
-  void call(F &&f, sqlite3_stmt *stmt, std::index_sequence<idx...>) {
+  void call(F &&f, Stmt &stmt, std::index_sequence<idx...>) {
     f(value(stmt, idx)...);
   }
 
@@ -66,8 +68,9 @@ namespace y44::ysqlpp::impl {
 
 namespace y44::ysqlpp {
   template <typename F>
-  bool step(sqlite3_stmt *stmt, F &&f) {
-    if(sqlite3_step(stmt) != SQLITE_ROW) {
+  bool step(Stmt &stmt, F &&f) {
+
+    if(sqlite3_step(static_cast<sqlite3_stmt *>(stmt)) != SQLITE_ROW) {
       return false;
     }
 

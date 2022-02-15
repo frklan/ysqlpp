@@ -1,67 +1,45 @@
-// Copyright (C) 2021, Fredrik Andersson
+// Copyright (C) 2021-2022, Fredrik Andersson
 // SPDX-License-Identifier: CC-BY-NC-4.0
 
 #pragma once
+
+#include <memory>
 
 #include <sqlite3.h>
 
 namespace y44::ysqlpp {
   class DB {
     public:
-      DB() = default;
+      DB() : m_db(nullptr, &sqlite3_close) {}
 
-      explicit DB(sqlite3 *db) : m_db(db) {}
+      explicit DB(sqlite3 *db) : m_db(db, &sqlite3_close) {}
 
       // move
       DB(DB &&rhs)
-      noexcept : m_db(rhs.m_db) {
-        rhs.m_db = nullptr;
+      noexcept : m_db(nullptr, &sqlite3_close) {
+        std::swap(m_db, rhs.m_db);
       }
 
       // copy
       DB(const DB &) = delete;
+
+      ~DB() noexcept = default;
 
       // copy assignment operator
       DB operator=(const DB &) = delete;
 
       // move asignment operator
       DB &operator=(DB &&rhs) noexcept {
-        reset();
-        m_db = rhs.m_db;
-        rhs.m_db = nullptr;
+        std::swap(m_db, rhs.m_db);
         return *this;
       }
 
-      /*operator sqlite3 *() {
-        return m_db;
-      }
-
-      operator sqlite3 **() {
-        return &m_db;
-      }*/
-
       sqlite3 *get() noexcept {
-        return m_db;
-      }
-      ~DB() noexcept {
-        close();
-      }
-
-      void close() noexcept {
-        if(m_db == nullptr) {
-          return;
-        }
-        sqlite3_close(m_db);
-        m_db = nullptr;
-      }
-
-      void reset() noexcept {
-        close();
-        m_db = nullptr;
+        return m_db.get();
       }
 
     private:
-      sqlite3 *m_db = nullptr;
+      std::unique_ptr<sqlite3, decltype(&sqlite3_close)> m_db;
   };
 
 
