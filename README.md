@@ -40,7 +40,7 @@ int main(int /*argc*/, const char ** /*argv*/) {
     exec(db, "insert into MY_TABLE (NAME, VALUE) values ('Name1', " + 123 + ");");
     exec(db, "insert into MY_TABLE (NAME, VALUE) values ('Name2', " + 321 + ");");
 
-    auto *stmt = y44::ysqlpp::prepare_single(db, "select * from MY_TABLE;");
+    auto stmt = y44::ysqlpp::prepare_single(db, "select * from MY_TABLE;");
     y44::ysqlpp::for_each(stmt, [](const std::string &name, double val) {
       std::clog << name << '\t' val << '\n';
     });
