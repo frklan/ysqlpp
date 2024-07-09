@@ -1,6 +1,3 @@
-find_package(spdlog)
-find_package(SQLite3)
-
 add_executable(${PROJECT_NAME}-simple main.cpp)
 
 target_compile_features(${PROJECT_NAME}-simple PRIVATE cxx_std_20)

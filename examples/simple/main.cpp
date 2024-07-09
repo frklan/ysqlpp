@@ -30,7 +30,7 @@ int main(int /*argc*/, const char ** /*argv*/) {
 
     auto stmt = y44::ysqlpp::prepare_single(db, "select * from ROOM;");
     y44::ysqlpp::for_each(stmt, [](const std::string &name, double val) {
-      spdlog::info("{}:{}\n", name, val);
+      spdlog::info("{}:{}", name, val);
     });
   } catch(std::runtime_error &e) {
     spdlog::error("{}", e.what());

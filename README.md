@@ -8,17 +8,18 @@ My take at a C++20 header only wrapper for SQLlite3; to better learn and underst
 
 ### Necessary Dependencies
 
-* A C++ compiler that supports C++20.
-* [SQLite3](https://sqlite.org)
-* [Conan](https://conan.io/)
-* [CMake](https://cmake.org/)
+- A C++ compiler that supports C++20.
+- [SQLite3](https://sqlite.org) v3.36.0
+- [spdlog](https://github.com/gabime/spdlog.git) v1.9.2
+- [fmt](https://github.com/fmtlib/fmt.git) v8.1.1
+- [CMake](https://cmake.org/)
 
 ### Optional Dependencies
 
-* [Doxygen](http://doxygen.nl/)
-* [ccache](https://ccache.dev/)
-* [Cppcheck](http://cppcheck.sourceforge.net/)
-* [include-what-you-use](https://include-what-you-use.org/)
+- [Doxygen](http://doxygen.nl/)
+- [ccache](https://ccache.dev/)
+- [Cppcheck](http://cppcheck.sourceforge.net/)
+- [include-what-you-use](https://include-what-you-use.org/)
 
 ## Using
 
@@ -65,7 +66,7 @@ FetchContent_MakeAvailable(ysqlpp)
 
 target_link_libraries(
   ${PROJECT_NAME}
-  PRIVATE 
+  PRIVATE
     ...
     SQLite3
     ysqlpp
@@ -84,13 +85,13 @@ $ make -j
 Useful cmake options are:
 
 ```bash
--DCMAKE_VERBOSE_MAKEFILE:BOOL=ON 
+-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
 -DCMAKE_BUILD_TYPE=DEBUG
 -DENABLE_IPO:BOOL=ON
--DENABLE_COVERAGE:BOOL=ON 
--DENABLE_SANITIZER_ADDRESS:BOOL=ON 
--DENABLE_SANITIZER_LEAK:BOOL=ON 
--DENABLE_SANITIZER_UNDEFINED_BEHAVIOR:BOOL=ON  
+-DENABLE_COVERAGE:BOOL=ON
+-DENABLE_SANITIZER_ADDRESS:BOOL=ON
+-DENABLE_SANITIZER_LEAK:BOOL=ON
+-DENABLE_SANITIZER_UNDEFINED_BEHAVIOR:BOOL=ON
 -DENABLE_SANITIZER_MEMORY:BOOL=ON
 ```
 
@@ -109,7 +110,6 @@ We use SemVer for versioning. For the versions available, see the tags on the re
 ## Authors
 
 - Fredrik Andersson - frklan
-
 
 ## License
 
